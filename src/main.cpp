@@ -1,6 +1,9 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <chrono>
+#include <functional>
 
 using namespace std;
 using uchar = unsigned char;
@@ -80,7 +83,7 @@ void OutputToStream(vector<char> data, ofstream &of) {
     }
 }
 
-int main() {
+void PackAssets(int &ret, bool &hasCompleted) {
     string assetsHome = ReadAllLines("directories").at(0);
     auto paths = ReadAllLines("files");
     //auto data = ReadAllBytes("samples/run.png");
@@ -95,23 +98,87 @@ int main() {
 
     if (!of.is_open()) {
         std::cout << "Failed to create output file.\n";
-        return -1;
+        ret = -1;
+        return;
     }
 
-    ofstream of2("output");
+    //ofstream of2("output", std::ios::binary);
     of << firstHalf;
     for (auto path : paths) {
         auto bytes = ReadAllBytes(assetsHome + "/" + path);
-        of2 << BytesToString(bytes);
+        //of2 << BytesToString(bytes);
         of << "assets.insert({\"" << path << "\", \"";
         of << base64_encode(BytesToString(bytes));
         of << "\"});";
     }
     of << secondHalf;
     of.close();
-    
+
     //cout << str;
     //of.close();
+
+    ret = 0;
+    hasCompleted = true;
+}
+
+void Animate(int &step, int ms = 100) {
+    if (step < 3) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+        std::cout << "." << std::flush;
+        step++;
+    }
+    else {
+        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+        std::cout << "\b\b\b   \b\b\b" << std::flush;
+        step = 0;
+    }
+}
+
+void FinishAnimation(int &step) {
+    for (int i = 0; i < step; i++) {
+        std::cout << "\b";
+    }
+    for (int i = 0; i < step; i++) {
+        std::cout << " ";
+    }
+    for (int i = 0; i < step; i++) {
+        std::cout << "\b";
+    }
+    std::cout << std::flush;
+}
+
+int PackAndAnimation() {
+    int retValue = -1;
+    bool hasCompleted = false;
+    std::thread packThread(PackAssets, std::ref(retValue), std::ref(hasCompleted));
+    std::cout << "Packing assets";
+    int step = 0;
+    while (!hasCompleted) {
+        Animate(step);
+    }
+    FinishAnimation(step);
+    packThread.join();
+    std::cout << "...\nAsset packing complete.\n";
+    return retValue;
+}
+
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        PackAndAnimation();
+    }
+    //std::cout << '-' << std::flush;
+    //while (true)
+    //{
+    //    Sleep(150);
+    //    std::cout << "." << std::flush;
+    //    Sleep(150);
+    //    std::cout << "." << std::flush;
+    //    Sleep(150);
+    //    std::cout << "." << std::flush;
+    //    Sleep(150);
+    //    std::cout << "\b\b\b   \b\b\b" << std::flush;
+    //}
 
     return 0;
 }
