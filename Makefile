@@ -8,7 +8,7 @@ all:
 	_build
 
 _build:
-	ifdef OS
+	ifdef $(OS)
 		ifeq ($(OS), Windows_NT)
 			$(CC) $(CFLAGS) src/main.cpp -o build/$(BN).exe
 		endif
@@ -21,7 +21,7 @@ _build:
 	endif
 
 run:
-	ifdef OS
+	ifdef $(OS)
 		ifeq ($(OS), Windows_NT)
 			build/$(BN).exe
 		endif
