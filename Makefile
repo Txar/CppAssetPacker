@@ -13,23 +13,23 @@ all:
 	_build
 
 _build:
-	ifeq ($(OS), Windows_NT)
+	ifeq ("$(OS)", "Windows_NT")
 		$(CC) $(CFLAGS) src/main.cpp -o build/$(BN).exe
 	endif
-	ifeq ($(UNAME_S), Linux)
+	ifeq ("$(UNAME_S)", "Linux")
 		$(CC) $(CFLAGS) src/main.cpp -o build/$(BN)
 	endif
-	ifeq ($(UNAME_S), Darwin)
+	ifeq ("$(UNAME_S)", "Darwin")
 		$(CC) $(CFLAGS) src/main.cpp -o build/$(BN)
 	endif
 
 run:
-	ifeq ($(OS), Windows_NT)
+	ifeq ("$(OS)", "Windows_NT")
 		build/$(BN).exe
 	endif
-	ifeq ($(UNAME_S), Linux)
+	ifeq ("$(UNAME_S)", "Linux")
 		build/$(BN)
 	endif
-	ifeq ($(UNAME_S), Darwin)
+	ifeq ("$(UNAME_S)", "Darwin")
 		build/$(BN)
 	endif
