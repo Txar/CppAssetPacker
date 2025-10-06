@@ -4,14 +4,23 @@
 #include <thread>
 #include <chrono>
 #include <functional>
+#include <string>
 
 using namespace std;
 using uchar = unsigned char;
 
+static const char* hex_encode(std::string data) {
+    char* encoded = new char[sizeof(data)];
+    for (unsigned int i = 0; i < sizeof(data); i++)
+            std::sprintf(&encoded[i], "%x", data[i]);
+        return 0;
+}
 
-static std::string base64_encode(const std::string &in) {
+static std::string base64_encode(const std::string &in, bool withLineBreaks = true) {
 
     std::string out;
+
+    int counter = 200;
 
     int val = 0, valb = -6;
     for (uchar c : in) {
@@ -20,6 +29,12 @@ static std::string base64_encode(const std::string &in) {
         while (valb >= 0) {
             out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[(val>>valb)&0x3F]);
             valb -= 6;
+        }
+        if (counter >= 100) {
+            out += "\"\n + \"";
+            counter = 0;
+        } else {
+            counter++;
         }
     }
     if (valb>-6) out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[((val<<8)>>(valb+8))&0x3F]);
@@ -89,7 +104,7 @@ void PackAssets(int &ret, bool &hasCompleted) {
     //auto data = ReadAllBytes("samples/run.png");
     //ofstream of("output.png", ios::out|ios::binary);
     //string str = "";
-    string firstHalf = "#include \"AssetManager.hpp\"\n#include <vector>\nstd::map<std::string, std::string> AssetManager::assets;void AssetManager::initialize() {assets = {};";
+    string firstHalf = "#include \"AssetManager.hpp\"\n#include <vector>\nstd::map<std::string, std::string> AssetManager::assets; bool AssetManager::initialized = false; bool AssetManager::isInitialized() { return initialized; } void AssetManager::initialize() { initialized = true; assets = {};";
     string secondHalf = "}std::string AssetManager::base64_decode(const std::string &in) {std::string out;std::vector<int> T(256,-1);for (int i=0; i<64; i++) T[\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\"[i]] = i;int val=0, valb=-8;for (unsigned char c : in) {if (T[c] == -1) break;val = (val << 6) + T[c];valb += 6;if (valb >= 0) {out.push_back(char((val>>valb)&0xFF));valb -= 8;}}return out;}std::string AssetManager::getAsset(std::string filename) {return base64_decode(assets.at(filename));}";
 
     string middle = "";
@@ -108,7 +123,13 @@ void PackAssets(int &ret, bool &hasCompleted) {
         auto bytes = ReadAllBytes(assetsHome + "/" + path);
         //of2 << BytesToString(bytes);
         of << "assets.insert({\"" << path << "\", \"";
+        // const char *hex_data = hex_encode(BytesToString(bytes));
+
+        // for (unsigned int i = 0; i < sizeof(bytes); i++) {
+        //     of << "0x" << hex_data[i];
+        // }
         of << base64_encode(BytesToString(bytes));
+
         of << "\"});";
     }
     of << secondHalf;

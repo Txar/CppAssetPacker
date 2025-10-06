@@ -1,0 +1,15 @@
+#include "AssetManager.hpp"
+#include <vector>
+std::map<std::string, std::string> AssetManager::assets; bool AssetManager::initialized = false; bool AssetManager::isInitialized() { return initialized; } void AssetManager::initialize() { initialized = true; assets = {};assets.insert({"test/run.png", "i"
+ + "VBORw0KGgoAAAANSUhEUgAAAGAAAAAYCAYAAAAF6fiUAAAAAXNSR0IArs4c6QAABHZJREFUaIHtWV1oHFUYPXd3s5lNd9fNJt2kpD+QFmp9CWofCg0WKkutLaWIkLciRATxQV8a"
+ + "ihAUAlWKDwEFQQiI9CU+hCYWfJCCC8VGsdEt1CbQBGxil03bXdm/TCaze33I3HFmZ3bnm4kmBPbAwl3mnvOd+e79vjuzC7TQQgsttNBCCzsCttMG6vHe2TDa/IwDwN62EJN8fi"
+ + "yvlwAA4zeLO+qNArf+A1sV+K/5bX7Gi2s1REI+nI718cknD42XHTfMbvPvayQAAKdjfXx5vcQBiA/ZgFe+4A7tPYI68yTsNv+WCthqArbKB8AS7RImnzzUE3H1s28BAOM3z/3v8"
+ + "bfbv6Ukhl/dg0S7hDWfYhHoefGcYwvYKh8A3j0ThqJybuRuV/zt9m9pQRO3yvi7uo764FRslQ8AisrR7e/UzebvL7H8/SXSze82/5YWZBR4Ws1zIeDFgFf+293nAa3nLn36DfKy"
+ + "zOHiiW2n/R9XjwMq+MXeXkf/lgX48tQpQAVZwA4Tt8r44swLuNh90hMfNgeeoqok4p2hIZPG3Y+/EmNX/u8MnQfgbQPAxn+nJNlOtLSgZgL3PhrB/OdXSQ4SrItkoBkWcznkZR"
+ + "m5SgVVzvHjJx9SqbYLOPP+O240LHyv6JQkSAd7bHNntwCNVo+X5//knYMDpMcxpVolGWiGw/E4AKCoKFgtl/mx105SYutzFnM5AECuUkGmVOJ//b5A1TDpeNgApvgAID/K2uauU"
+ + "QUgEgwyo4BA9kbKsRSvJ5MoKgqnGGgAPYaxcn7+etpNG9DnFhXFlcb1ZFIf52XZ7QZAJBhkkWBQ5wvY5c5yBrwxPoIfRsYZtB2gCbDXp6cpsY0mdAMiiZTFE1jM5XA4Hkf/lUt4"
+ + "68IsALCF1Jgjr//KJWRvpNi9n37Tk3UoFvvXfyrl4i7McLkBcHkuhM00rgEAy0xes8yxFTx6YBSjz8/ysfkTKFTSmBhkbPg2R+bZDCmwkS/iLCw7Jw8A9nVdEEMOANGOAf3awv"
+ + "IYKQHaDjbF1/gkD4KfvPYBXhGLT+QePTAqhhwACpW0fi3zbMb5PUDAYB7DtzdfKgzJcYSRD+JrfH3yNbj+wfDyXEjbfeb4huQ48sfmT4jko1BJk/zXJ19DU/+mFnTsyJvg1Qi4/"
+ + "YHv9lFMb2MuoXOei3YxrtI1+g8NoqoGoWhtt1BJGyvIs/9oxwC5+mFNflP/pgrwtT/gXN1f/8OTyTSlClhgxWTEWIbNwFEwyfg7fnFVCaFwnityuKl/ShUEpRIKlTSn+hbYqD02"
+ + "fmWB6JSj/4YtqAGJtBuNiXNzEzX/Hxb9QHQKvvYHXv+38OQ/HMtazh8KShvfWfTjvYsIhXMN/VsWQLtZ8QEAcBT0cY2tOBqpbfSxQHQKgeiUhU+BYT7TPJEPUO1mTf43ao/18Z"
+ + "r6q6OGIu9hVf+s/t3Ip8Awn216yjdsYSThnu6XwH0r+uqurq468hKJhD6f1faz7NM5xziCQ51PxcF9ZyFX73r2L/lfZo8y3zvGERzqfAD4B7h/4cv/1FbpAAAAAElFTkSuQmCC"});}std::string AssetManager::base64_decode(const std::string &in) {std::string out;std::vector<int> T(256,-1);for (int i=0; i<64; i++) T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;int val=0, valb=-8;for (unsigned char c : in) {if (T[c] == -1) break;val = (val << 6) + T[c];valb += 6;if (valb >= 0) {out.push_back(char((val>>valb)&0xFF));valb -= 8;}}return out;}std::string AssetManager::getAsset(std::string filename) {return base64_decode(assets.at(filename));}
